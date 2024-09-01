@@ -62,8 +62,27 @@ router.post("/signup", async (req, res) => {
     });
   }
 });
-router.get("/", function(req, res){
-    res.send("Hello World")
+
+router.post("/login", async(req,res)=>{
+  try{
+    const {username, password}= req.body;
+    const user= await User.findOne({username});
+    if(!user){
+      return res.status(401).json({message: "Invalid username or password"});
+    }
+    const passwordMatch= await comparePassword(password, user.password);
+    if(!passwordMatch){
+      return res.status(401).json({message: "Invalid username or password"});
+    }
+    const token= jwt.sign({userId: user._id}, JWT_SECRET);
+    res.status(200).json({token, userId: user._id});
+  }
+  catch(error){
+    console.error("Login error:", error);
+    res.status(500).json({
+      message: "Internal server error"
+    });
+  }
 })
 
 
