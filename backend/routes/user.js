@@ -4,11 +4,11 @@ const router= express.Router();
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
-const {hashPassword}= require("../utils/PasswordUtils");
+const {hashPassword, comparePassword}= require("../utils/PasswordUtils");
 
 //zod schema
 const signupSchema = zod.object({
-  username: zod.string().min(6).max(30),
+  username: zod.string().email().min(6).max(30),
   password: zod.string().min(6),
   firstName: zod.string().max(50),
   lastName: zod.string().max(50)
@@ -63,22 +63,40 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+const loginSchema= zod.object({
+  username: zod.string().email(),
+  password: zod.string()
+});
+
 router.post("/login", async(req,res)=>{
   try{
+    const {success}= loginSchema.safeParse(req.body);
+    if(!success){
+      return res.status(411).json({
+        msg:"Incorrect Input"
+      })
+    }
+
     const {username, password}= req.body;
-    const user= await User.findOne({username});
+
+    const user= await User.findOne({
+      username
+    });
+
     if(!user){
-      return res.status(401).json({message: "Invalid username or password"});
+      return res.status(401).json({message: "Invalid username"});
     }
+
     const passwordMatch= await comparePassword(password, user.password);
+
     if(!passwordMatch){
-      return res.status(401).json({message: "Invalid username or password"});
+      return res.status(401).json({message: "Invalid password"});
     }
+
     const token= jwt.sign({userId: user._id}, JWT_SECRET);
     res.status(200).json({token, userId: user._id});
   }
   catch(error){
-    console.error("Login error:", error);
     res.status(500).json({
       message: "Internal server error"
     });
