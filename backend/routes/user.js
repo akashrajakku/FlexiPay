@@ -1,10 +1,10 @@
-const express= require("express")
-const {User}= require("../db")
+const express= require("express");
+const {User}= require("../db");
 const router= express.Router();
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
-const {hashPassword}= require("../utils/PasswordUtils")
+const {hashPassword}= require("../utils/PasswordUtils");
 
 //zod schema
 const signupSchema = zod.object({
@@ -25,7 +25,7 @@ router.post("/signup", async (req, res) => {
         let errorMessage = "";
         for (const error of errors) {
           if (error.path[0] === "username") {
-            errorMessage = "Username should be between 3 and 30 characters";
+            errorMessage = "Username should be between 6 and 30 characters";
           } else if (error.path[0] === "password") {
             errorMessage = "Password should be minimum of 6 characters";
           } else if (error.path[0] === "firstName" || error.path[0] === "lastName") {
