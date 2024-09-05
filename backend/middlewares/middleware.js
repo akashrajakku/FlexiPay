@@ -4,7 +4,7 @@ const JWT_SECRET= require('../config');
 const authMiddleware= (req, res, next)=>{
     const header= req.headers.authorization;
     if(!header || !header.startsWith('Bearer ')){
-        return res.status(403).json({
+        return res.status(401).json({
             msg: "Invalid Header"
         })
     }
@@ -18,8 +18,8 @@ try {
     next();
 
 } catch (error) {
-    return res.status(403).json({
-        msg: "Access Denied !!!"
+    return res.status(401).json({
+        msg: "Invalid Token !!!"
     })
 }
     
