@@ -4,9 +4,10 @@ async function main() {
 await mongoose.connect("mongodb://localhost:27017/flexipay");
 console.log("Connected to MongoDB");
 }
+const{Schema, model} = require("mongoose");
 
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
 username: {
 type: String,
 required: true,
@@ -30,11 +31,25 @@ trim: true
 }
 });
 
-const User = mongoose.model('User', userSchema);
+const User = model('User', userSchema);
 
+const accountSchema= new Schema({
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    balance: {
+        type: Number,
+        required: true
+    }
+})
+
+const Account= model('Account', accountSchema);
 
 module.exports = {
-User
+User,
+Account
 };
 
 
