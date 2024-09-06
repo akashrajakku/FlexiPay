@@ -139,4 +139,53 @@ router.put('/', authMiddleware, async(req, res)=>{
   }
 })
 
+//to get user based on query provided as firstname/lastname
+const querySchema= zod.object({
+  filter: zod.string().max(50)
+})
+
+router.get('/bulk', async(req, res)=>{
+  try {
+      const{success}= querySchema.safeParse(req.query);
+
+      if(!success){
+        res.status(400).json({
+          message: "Invalid Query, Provide a String query of max length 50"
+        })
+      }
+
+    const filter= req.query.filter;
+
+    const filtered_users= await User.find({
+      $or: [
+        {firstName: filter},
+        {lastName: filter}
+      ]
+    })
+
+    users= filtered_users.map((user)=>{
+      return{
+        firstName: user.firstName,
+        lastName: user.lastName,
+        _id: user._id
+      }
+    })
+    
+    if(filtered_users.length > 0){
+      res.status(200).json({
+         users
+      })
+    }else{
+      res.status(200).json({
+        message: "No user found"
+      })
+    }
+
+    } catch (error) {
+        res.status(500).json({
+          message: "Internal Server Error"
+        })
+    }
+    
+})
 module.exports= router;
