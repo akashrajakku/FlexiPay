@@ -1,5 +1,5 @@
 const express= require("express");
-const {User}= require("../db");
+const {User, Account}= require("../db");
 const router= express.Router();
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
@@ -46,12 +46,18 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
 
+    const newAccount= await Account.create({
+      userId: newUser._id,
+      balance: Math.floor(Math.random()*10000)+1
+    })
+
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET);
 
     res.status(201).json({
       message: "User created successfully",
       token: token,
-      userId: newUser._id
+      userId: newUser._id,
+      balance: newAccount.balance
     });
   } catch (error) {
     console.error("Signup error:", error);
@@ -154,7 +160,7 @@ router.get('/bulk', async(req, res)=>{
         })
       }
 
-    const filter= req.query.filter;
+    const filter= req.query.filter || "";
 
     const filtered_users= await User.find({
       $or: [
