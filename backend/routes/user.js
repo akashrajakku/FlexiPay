@@ -5,7 +5,7 @@ const zod = require("zod");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config");
 const {hashPassword, comparePassword}= require("../utils/PasswordUtils");
-
+const {authMiddleware}= require("../middlewares/middleware")
 //zod schema
 const signupSchema = zod.object({
   username: zod.string().email().min(6).max(30),
@@ -17,15 +17,13 @@ const signupSchema = zod.object({
 //error handling and data storage
 router.post("/signup", async (req, res) => {
   try {
-    const { success } = signupSchema.safeParse(req.body);
-    if (!success) {
-      const validationResult = signupSchema.safeParse(req.body);
+    const validationResult = signupSchema.safeParse(req.body);
       if (!validationResult.success) {
         const errors = validationResult.error.errors;
         let errorMessage = "";
         for (const error of errors) {
           if (error.path[0] === "username") {
-            errorMessage = "Username should be between 6 and 30 characters";
+            errorMessage = "Username should contain be an email";
           } else if (error.path[0] === "password") {
             errorMessage = "Password should be minimum of 6 characters";
           } else if (error.path[0] === "firstName" || error.path[0] === "lastName") {
@@ -38,7 +36,7 @@ router.post("/signup", async (req, res) => {
           message: errorMessage || "Invalid input"
         });
       }
-    }
+
     const hashedPassword= await hashPassword(req.body.password);
     
     const newUser = await User.create({
@@ -103,6 +101,42 @@ router.post("/login", async(req,res)=>{
   }
 })
 
+//optional zod schema for update
+const updateSchema = zod.object({
+  password: zod.string().min(6).optional(),
+  firstName: zod.string().max(50).optional(),
+  lastName: zod.string().max(50).optional(),
+});
+router.put('/', authMiddleware, async(req, res)=>{
+    try {
+      const{success}= updateSchema.safeParse(req.body);
+      if (!success) {
+        res.status(411).json({
+            message: "Error while updating information"
+        })
+    }
 
+    const updates={};
+    if(req.body.firstName) updates.firstName= req.body.firstName;
+    if(req.body.lastName) updates.lastName= req.body.lastName;
+    if(req.body.password) updates.password= await hashPassword(req.body.password);
+
+    const update_result= await User.updateOne({_id: req.userId}, {$set: updates});
+
+    if(update_result.modifiedCount > 0){
+        res.status(200).json({
+          message: "Updated successfully"
+      })
+    }
+    else {
+      res.status(404).json({ message: 'User not found or no changes made' });
+  }
+    
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+})
 
 module.exports= router;
