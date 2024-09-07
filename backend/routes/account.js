@@ -19,49 +19,60 @@ router.get("/balance", authMiddleware, async (req, res)=>{
     }
 })
 
-router.post("/transfer", authMiddleware, async(req, res)=>{
-
-    const session= await mongoose.startSession();
+router.post("/transfer", authMiddleware, async (req, res) => {
+    const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-        const receiverId= req.body.to;
-        const senderId= req.userId;
-        const amountToSend= req.body.amount;
+        const receiverId = req.body.to;
+        const senderId = req.userId;
+        const amountToSend = req.body.amount;
 
-        const validationCheck= await Account.findOne({userId: receiverId});
-        if(!validationCheck){
-            await session.abortTransaction();
-            session.endSession();
-
-            res.status(400).json({
+        //Validating the receiver
+        const receiverAccount = await Account.findOne({ userId: receiverId }).session(session);
+        if (!receiverAccount) {
+            return res.status(404).json({
                 message: "Invalid account"
             })
         }
 
-        const senderBalance= await (Account.findById(senderId)).balance;
-        if(senderBalance < amountToSend){
-            await session.abortTransaction();
-            session.endSession();
-
-            res.status(400).json({
-                message: "Insufficient Balance"
+        //amount should be more than zero
+        if(amountToSend<=0){
+            return res.status(400).json({
+                message: "Amount must be greater than 0"
             })
         }
 
-        await Account.updateOne({userId: senderId} , {$inc: {balance: -amountToSend}}).session(session);
-        await Account.updateOne({userId: receiverId} , {$inc: {balance: amountToSend}}).session(session);
+        //can't send fund to yourself
+        if(senderId == receiverId){
+            return res.status(400).json({
+                message: "Cannot transfer fund to same account"
+            })
+        }
+
+        //checking if sender is having sufficient balance
+        const senderAccount = await Account.findOne({ userId: senderId }).session(session);
+        if (!senderAccount || senderAccount.balance < amountToSend) {
+            return res.status(403).json({
+                message: "Insufficient balance"
+            })
+        }
+        
+        await Account.updateOne({ userId: senderId }, { $inc: { balance: -amountToSend } }).session(session);
+        await Account.updateOne({ userId: receiverId }, { $inc: { balance: amountToSend } }).session(session);
 
         await session.commitTransaction();
-
-        res.status(200).json({
-            message: "Transaction Successful"
-        })
+        res.status(200).json({ 
+            message: "Transaction successful" 
+        });
     } catch (error) {
         await session.abortTransaction();
+        res.status(400).json({ 
+            message: "Internal server error"
+        });
+    } finally {
         session.endSession();
-        res.status(500).json({ message: "Internal server error", error });
     }
+});
 
-})
 module.exports= router;
