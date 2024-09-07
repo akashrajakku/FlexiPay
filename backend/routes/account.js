@@ -39,7 +39,7 @@ router.post("/transfer", authMiddleware, async(req, res)=>{
             })
         }
 
-        const senderBalance= await Account.findById(senderId).balance;
+        const senderBalance= await (Account.findById(senderId)).balance;
         if(senderBalance < amountToSend){
             await session.abortTransaction();
             session.endSession();

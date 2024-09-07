@@ -1,10 +1,17 @@
 const mongoose = require('mongoose');
-const { MONGO_URL } = require('./config');
-main().catch(err=> console.log("Error connecting to MongoDB"));
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+const MONGODB_URL = process.env.MONGODB_URL;
+console.log("Attempting to connect to mongodb ...");
+
+main().catch(err => console.error("Error connecting to MongoDB"));
+
 async function main() {
-await mongoose.connect(MONGO_URL);
-console.log("Connected to MongoDB");
+  await mongoose.connect(MONGODB_URL);
+  console.log("Connected to MongoDB");
 }
+
 const{Schema, model} = require("mongoose");
 
 

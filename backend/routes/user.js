@@ -3,9 +3,14 @@ const {User, Account}= require("../db");
 const router= express.Router();
 const zod = require("zod");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../config");
 const {hashPassword, comparePassword}= require("../utils/PasswordUtils");
 const {authMiddleware}= require("../middlewares/middleware")
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const JWT_SECRET= process.env.JWT_SECRET;
+
 //zod schema
 const signupSchema = zod.object({
   username: zod.string().email().min(6).max(30),

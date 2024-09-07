@@ -1,5 +1,8 @@
 const jwt= require("jsonwebtoken");
-const config_obj= require('../config');
+const dotenv = require('dotenv');
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+const JWT_SECRET= process.env.JWT_SECRET;
 
 const authMiddleware= (req, res, next)=>{
     const header= req.headers.authorization;
@@ -13,7 +16,7 @@ const authMiddleware= (req, res, next)=>{
     const token= header.split(' ')[1];
 try {
     
-    const decoded= jwt.verify(token, config_obj.JWT_SECRET);
+    const decoded= jwt.verify(token, JWT_SECRET);
     
     req.userId=decoded.userId;
 
