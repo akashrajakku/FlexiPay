@@ -1,8 +1,8 @@
-import React from 'react'
 
-function Heading() {
+
+const Heading = ({label}) => {
   return (
-    <div>Heading</div>
+    <h1 className="font-bold text-4xl pt-4">{label}</h1>
   )
 }
 
