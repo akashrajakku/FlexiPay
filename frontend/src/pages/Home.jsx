@@ -18,7 +18,7 @@ function Home() {
       <div className="relative z-10 flex flex-col h-full">
         <div className='flex justify-between items-center'> 
           <img src={logo} alt='logo' className='w-48 pt-5 pl-10'/>
-          <div className='pr-10 pt-5'><Button label="Signin" onClick={handleSignin}/></div>
+          <div className='pr-10 pt-5'><Button label="Login" onClick={handleSignin}/></div>
         </div>
         
         <div className="flex-grow flex flex-col justify-center items-center">
