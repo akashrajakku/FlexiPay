@@ -1,6 +1,6 @@
 export default function Send() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-100">
+    <div className="flex items-center justify-center min-h-screen bg-blue-50">
       <div className="bg-white shadow-md rounded-lg p-6 sm:p-10 w-full max-w-sm">
       
         <h2 className="text-2xl font-bold text-center mb-6">Send Money</h2>
