@@ -43,13 +43,14 @@ const Signup = () => {
           <InputBox label="Re-enter Password"/>
 
           <Button onClick={
-            ()=>{
-              axios.post("http://localhost:3000/api/v1/user/signup", {
+            async ()=>{
+              const response= await axios.post("http://localhost:3000/api/v1/user/signup", {
                 username: username,
                 firstName: firstName,
                 lastName: lastName,
                 password: password
-              })
+              });
+              localStorage.setItem("token", response.data.token);
             }
           } label="Create your Flexipay account" className="mt-4"/>
           <BottomWarning label="Already have an account?" buttonText="Login" to="/signin" />
