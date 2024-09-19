@@ -4,9 +4,15 @@ import InputBox from "../components/InputBox"
 import BottomWarning from "../components/BottomWarning"
 import Button from "../components/Button"
 import Logo from "../resources/logo.png"
-
+import { useState } from "react"
+import axios from "axios"
 
 const Signup = () => {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <div className="bg-blue-200 h-screen flex-col justify-center items-center">
       <div className="flex flex-col justify-center items-center pt-10 pb-10">
@@ -18,12 +24,34 @@ const Signup = () => {
         <div className="flex flex-col">
           <Heading label="Signup"/>
           <SubHeading label="Create an account to continue"/>
-          <InputBox label="First Name" placeholder="first name" />
-          <InputBox label="Last Name" placeholder="last name" />
-          <InputBox label="Email" placeholder="email" />
-          <InputBox label="Password" placeholder="At least 6 characters"/>
+          <InputBox onChange={(e)=>{
+              setFirstName(e.target.value);
+          }} label="First Name" placeholder="Akash" />
+
+          <InputBox onChange={(e)=>{
+              setLastName(e.target.value);
+          }} label="Last Name" placeholder="Raj" />
+
+          <InputBox onChange={(e)=>{
+              setUsername(e.target.value);
+          }} label="Email" placeholder="abc@email.com" />
+
+          <InputBox onChange={(e)=>{
+              setPassword(e.target.value);
+          }} label="Password" placeholder="At least 6 characters"/>
+
           <InputBox label="Re-enter Password"/>
-          <Button label="Create your Flexipay account" className="mt-4"/>
+
+          <Button onClick={
+            ()=>{
+              axios.post("http://localhost:3000/api/v1/user/signup", {
+                username: username,
+                firstName: firstName,
+                lastName: lastName,
+                password: password
+              })
+            }
+          } label="Create your Flexipay account" className="mt-4"/>
           <BottomWarning label="Already have an account?" buttonText="Login" to="/signin" />
       </div>
     </div>

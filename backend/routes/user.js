@@ -28,7 +28,7 @@ router.post("/signup", async (req, res) => {
         let errorMessage = "";
         for (const error of errors) {
           if (error.path[0] === "username") {
-            errorMessage = "Username should contain be an email";
+            errorMessage = "Username should contain an email";
           } else if (error.path[0] === "password") {
             errorMessage = "Password should be minimum of 6 characters";
           } else if (error.path[0] === "firstName" || error.path[0] === "lastName") {
@@ -44,6 +44,14 @@ router.post("/signup", async (req, res) => {
 
     const hashedPassword= await hashPassword(req.body.password);
     
+    const username= req.body.username;
+    const existingUser= await User.findOne({username});
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Username already exists"
+      });
+    }
+
     const newUser = await User.create({
       username: req.body.username,
       firstName: req.body.firstName,
