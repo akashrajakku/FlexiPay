@@ -2,15 +2,18 @@ import Button from "./Button"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import useDebounce from "../hooks/UseDebounce"
 
 export default function Users() {
   const [users, setUsers] = useState([])
   const [filter, setFilter]= useState("")
 
+  const debouncedFilter= useDebounce(filter, 500);
+  
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/user/bulk?filter=${filter}`);
+        const response = await axios.get(`http://localhost:3000/api/v1/user/bulk?filter=${debouncedFilter}`);
        
         if (response.data.message === "No user found") {
           setUsers([]);
@@ -21,8 +24,9 @@ export default function Users() {
         console.error("Error fetching users:", error);
       }
     };
-    fetchUsers();
-  }, [filter]);
+
+    if(debouncedFilter) fetchUsers();
+  }, [debouncedFilter]);
 
   return (
     <div className="px-4 sm:px-14 my-4">
