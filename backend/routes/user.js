@@ -1,4 +1,6 @@
 const express= require("express");
+const crypto= require("crypto");
+const nodemailer= require("nodemailer");
 const {User, Account}= require("../db");
 const router= express.Router();
 const zod = require("zod");
@@ -10,7 +12,72 @@ const path = require('path');
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const JWT_SECRET= process.env.JWT_SECRET;
+const FLEXIPAY_MAIL= process.env.FLEXIPAY_MAIL;
+const FLEXIPAY_PW= process.env.FLEXIPAY_PW;
 
+const authSchema= zod.object({
+  username: zod.string().email().min(6).max(30)
+})
+
+let otpStore={} //temporary storage for otp
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: FLEXIPAY_MAIL,
+    pass: FLEXIPAY_PW,
+  },
+});
+
+router.post("/auth", async (req, res)=>{
+  try {
+    const username= req.body.username;
+  //schema checking --> entered value is email or not 
+  const validationResult= authSchema.safeParse(username);
+  if(!validationResult){
+    res.status(400).json({
+      message: "Enter a valid email address"
+    })
+  }
+
+  //if user already exists
+  const existingUser= await User.findOne({username});
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Username already exists"
+      });
+    }
+
+  const otp= crypto.randomInt(100000, 999999).toString();
+  otpStore[username]=otp;
+
+  const mailOptions = {
+    from: FLEXIPAY_MAIL,
+    to: username,
+    subject: "Signup with your OTP Code",
+    text: `Your OTP code is ${otp}`,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ 
+      success: true, 
+      messageId: info.messageId,
+      response: info.response 
+    });
+  });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "internal server error"
+    })    
+  }
+
+})
 //zod schema
 const signupSchema = zod.object({
   username: zod.string().email().min(6).max(30),
