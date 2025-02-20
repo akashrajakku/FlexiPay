@@ -26,7 +26,6 @@ const Signin = () => {
     event.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-
     setLoader(true);
 
       try {
@@ -36,27 +35,51 @@ const Signin = () => {
             password: password
         });
 
-        const status = response.status;
-        if(status === 200){ // everything is okay, success
-            const message = response.data.message;
-            setLoader(false);
-            setSuccessMessage(message);
-            setTimeout(() => {
-              navigate('/dashboard')
-            }, 1500);
-        }else{
-            setErrorMessage('Server is busy');
-        }
+        navigate('/dashboard');
+
       } catch (error) {
-        try { // checking for known error
-          const message = error.response.message;
+        if(error.response){
+            const errorData = error.response.data.error;
+            const errorType= error.response.data.error.type;
+            const message = error.response.data.error.message;
+
+          if(errorData && errorType && message){
+
+              if(errorType === "Incorrect Input"){
+                setLoader(false);
+                setErrorMessage(message);
+              }
+
+              else if(errorType === "Incorrect Username"){
+                setLoader(false);
+                setErrorMessage(message);
+              }
+
+              else if(errorType === "Incorrect Password"){
+                setLoader(false);
+                setErrorMessage(message);
+              }
+
+              else if(errorType === "SYSTEM_ERROR"){
+                setLoader(false);
+                setErrorMessage(message);
+              }
+
+              else{
+                setLoader(false);
+                setErrorMessage("Unable to connect to the server. Please try again later.");
+              }
+          }
+
+        }else if(error.request){
           setLoader(false);
-          setErrorMessage(message);
-        } catch (error) {
-          setLoader(false);
-          setErrorMessage('An Unexpected Error Occurred');
-          console.log(error);
+          setErrorMessage("Network error. Please check your internet connection.");
         }
+        else{
+          setLoader(false);
+          setErrorMessage("An unexpected error occurred. Please try again.");
+        }
+        //console.log(error);
       }
   }
 
@@ -92,9 +115,27 @@ const Signin = () => {
           <BottomWarning label="Didn't have an account?" buttonText="Signup" to="/signup" />
           {/*displaying error and successMessage*/}
       
-          {errorMessage && (<div>{errorMessage}</div>)}
+          {errorMessage && (
+              <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded relative">
+                <p className="flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {errorMessage}
+                </p>
+              </div>)
+          }
 
-          {successMessage && (<div>{successMessage}</div>)}
+          {successMessage && (
+                    <div className="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded relative">
+                      <p className="flex items-center">
+                        <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        {successMessage}
+                      </p>
+                    </div>)
+          }
 
           {loader && (
             <div className="loading-spinner">

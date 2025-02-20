@@ -7,28 +7,39 @@ const {hashPassword, comparePassword}= require("../utils/PasswordUtils");
 const {authMiddleware}= require("../middlewares/middleware")
 const dotenv = require('dotenv');
 const path = require('path');
+const { error } = require("console");
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const JWT_SECRET= process.env.JWT_SECRET;
 
 //zod schema
 const signupSchema = zod.object({
-  username: zod.string().email().min(6).max(30),
+  username: zod.string().email().min(10).max(100),
   password: zod.string().min(6),
   firstName: zod.string().max(50),
   lastName: zod.string().max(50)
 });
 
+class signupError extends Error{
+    constructor(message, errorCode, errorType) {
+      super(message);
+      this.errorCode=errorCode;
+      this.errorType=errorType;
+    }
+}
+
 //error handling and data storage
 router.post("/signup", async (req, res) => {
   try {
     const validationResult = signupSchema.safeParse(req.body);
+    console.log(validationResult);
+    
       if (!validationResult.success) {
         const errors = validationResult.error.errors;
         let errorMessage = "";
         for (const error of errors) {
           if (error.path[0] === "username") {
-            errorMessage = "Username should contain an email";
+            errorMessage = "Email must be minimum of 10 characters";
           } else if (error.path[0] === "password") {
             errorMessage = "Password should be minimum of 6 characters";
           } else if (error.path[0] === "firstName" || error.path[0] === "lastName") {
@@ -37,19 +48,15 @@ router.post("/signup", async (req, res) => {
           break;
         }
 
-        return res.status(400).json({
-          message: errorMessage || "Invalid input"
-        });
+        throw new signupError(`${errorMessage}`|| `Invalid Input`, 400, "Invalid Input");
       }
-
-    const hashedPassword= await hashPassword(req.body.password);
     
+    
+    const hashedPassword= await hashPassword(req.body.password);
     const username= req.body.username;
     const existingUser= await User.findOne({username});
     if (existingUser) {
-      return res.status(409).json({
-        message: "Username already exists"
-      });
+      throw new signupError("Username already exists", 409, "Duplicate User")
     }
 
     const newUser = await User.create({
@@ -73,25 +80,43 @@ router.post("/signup", async (req, res) => {
       balance: newAccount.balance
     });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).json({
-      message: "Internal server error"
-    });
+      if(error instanceof signupError){
+        res.status(error.errorCode).json({
+          error:{
+              type: error.errorType,
+              message: error.message
+          }
+        })
+      }else{
+        res.status(error.errorCode).json({
+          error:{
+              type: "SYSTEM_ERROR",
+              message: "An Unexpected error occurred"
+          }
+        }) 
+      }
   }
 });
+
 
 const loginSchema= zod.object({
   username: zod.string().email(),
   password: zod.string()
 });
 
+class AuthError extends Error{
+  constructor(message, errorCode, errorType) {
+      super(message);
+      this.errorCode=errorCode;
+      this.errorType=errorType;
+  }
+}
+
 router.post("/login", async(req,res)=>{
   try{
     const {success}= loginSchema.safeParse(req.body);
     if(!success){
-      return res.status(411).json({
-        msg:"Incorrect Input"
-      })
+      throw new AuthError("You have entered incorrect value", 411, "Incorrect Input");
     }
 
     const {username, password}= req.body;
@@ -101,13 +126,13 @@ router.post("/login", async(req,res)=>{
     });
 
     if(!user){
-      return res.status(401).json({message: "Invalid username"});
+      throw new AuthError("Email not found. Please check and try again.", 401, "Incorrect Username");
     }
 
     const passwordMatch= await comparePassword(password, user.password);
 
     if(!passwordMatch){
-      return res.status(401).json({message: "Invalid password"});
+      throw new AuthError("Incorrect password. Please try again.", 401, "Incorrect Password");
     }
 
     const token= jwt.sign({userId: user._id}, JWT_SECRET);
@@ -115,9 +140,21 @@ router.post("/login", async(req,res)=>{
   }
   
   catch(error){
-    res.status(500).json({
-      message: "Internal server error"
-    });
+    if(error instanceof AuthError){
+        res.status(error.errorCode).json({
+            error:{
+                type: error.errorType,
+                message: error.message
+            }
+        })
+    }else{
+      res.status(error.errorCode).json({
+        error:{
+            type: "SYSTEM_ERROR",
+            message: "An Unexpected error occurred"
+        }
+      })
+    }
   }
 })
 
