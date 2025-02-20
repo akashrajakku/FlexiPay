@@ -79,6 +79,11 @@ const navigate =useNavigate();
           valid=false;
       }
 
+      if(formData.password && formData.password.length<6){
+          currentErrors.password= "Password must be at least 6 characters long."
+          valid=false;
+      }
+
       if(!formData.password2.trim()){
           currentErrors.password2= "Re-entering password is required";
           valid=false;
@@ -172,7 +177,6 @@ const navigate =useNavigate();
             }
           }
         }else{
-            console.log(`Form validation failed`);
             setLoader(false);
         }
     }

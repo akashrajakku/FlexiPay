@@ -196,7 +196,7 @@ router.put('/', authMiddleware, async(req, res)=>{
   }
 })
 
-//to get user based on query provided as firstname/lastname
+//to get user based on query provided as firstName/lastName
 const querySchema= zod.object({
   filter: zod.string().max(50)
 })

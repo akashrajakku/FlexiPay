@@ -8,19 +8,72 @@ import signin1 from '../resources/signin1.jpg'
 import { useNavigate} from 'react-router-dom';
 import axios from "axios";
 import { useState } from "react"
+import ValidateEmail from "../utils/ValidateEmail"
 
 
 const Signin = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [formData, setFormData] = useState({
+      username:"",
+      password:""
+  })
+
+  const [formValidationErrors, setFormValidationErrors] = useState({
+    username:"",
+    password:""
+})
+
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [loader, setLoader] = useState(false)
+  
 
   const navigate= useNavigate();
   const handleLogoClick = () =>{
       navigate('/');
   }
+
+  const handleInputChange=(event)=>{
+    const{name, value}= event.target;
+
+      setFormData(prev => ({
+          ...prev,
+          [name]:value
+      }))
+
+      setFormValidationErrors(prev => ({
+          ...prev,
+          [name]:""
+      }))
+  }
+
+  const validateForm = ()=>{
+    let valid = true;
+    const currentErrors = {};
+
+    if(!formData.username.trim()){ // first name field is empty
+        currentErrors.username= "Email is required";
+        valid = false;
+    }
+
+    if(!formData.password.trim()){
+        currentErrors.password= "Password is required";
+        valid=false;
+    }
+
+    if(formData.password && formData.password.length<6){
+        currentErrors.password= "Your password consists of a minimum of 6 characters"
+        valid=false;
+    }
+
+    if(formData.username && !ValidateEmail(formData.username)){
+        currentErrors.username = "Please enter a valid email address";
+        valid =false;
+    }
+
+    setFormValidationErrors(currentErrors);
+    return valid;
+}
 
   const handleLoginClick= async(event)=>{
     event.preventDefault();
@@ -28,16 +81,19 @@ const Signin = () => {
     setSuccessMessage('');
     setLoader(true);
 
+    if(validateForm()){
       try {
         const url="http://localhost:3000/api/v1/user/login";
         const response= await axios.post(url, {
-            username: username,
-            password: password
+            username: formData.username,
+            password: formData.password
         });
 
         navigate('/dashboard');
 
       } catch (error) {
+        //console.log(error);
+        
         if(error.response){
             const errorData = error.response.data.error;
             const errorType= error.response.data.error.type;
@@ -81,6 +137,10 @@ const Signin = () => {
         }
         //console.log(error);
       }
+    }else{
+        setLoader(false);
+    }
+      
   }
 
   return (
@@ -94,17 +154,27 @@ const Signin = () => {
         <div className="flex flex-col">
           <Heading label="Hello Again!"/>
           <SubHeading label="Welcome back you've been missed!"/>
-          <InputBox 
-            label="Email" 
-            placeholder="enter e-mail" 
-            value={username}
-            onChange={(e)=> setUsername(e.target.value)}/>
+            <div>
+              <InputBox 
+                name="username"
+                label="Email" 
+                placeholder="enter e-mail" 
+                onChange={handleInputChange}/>
+                <div className="flex justify-start">
+                  {formValidationErrors.username && <p className="text-red-500 text-sm mt-1">{formValidationErrors.username}</p>}
+                </div>
+            </div>
 
-          <InputBox 
-            label="Password" 
-            placeholder="password"
-            value={password}
-            onChange={(e)=> setPassword(e.target.value)}/>
+            <div>
+              <InputBox 
+                name="password"
+                label="Password" 
+                placeholder="password"
+                onChange={handleInputChange}/>
+                <div className="flex justify-start">
+                  {formValidationErrors.password && <p className="text-red-500 text-sm mt-1">{formValidationErrors.password}</p>}
+                </div>
+            </div>
 
           <Button 
             disableFlag={loader} // avoid multiple button press once a single request is sent
