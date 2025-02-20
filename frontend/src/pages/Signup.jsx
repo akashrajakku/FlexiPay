@@ -80,7 +80,7 @@ const navigate =useNavigate();
       }
 
       if(!formData.password2.trim()){
-          currentErrors.password= "Re-entering password is required";
+          currentErrors.password2= "Re-entering password is required";
           valid=false;
       }
 
