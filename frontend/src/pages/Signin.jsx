@@ -89,6 +89,8 @@ const Signin = () => {
             password: formData.password
         });
 
+        const token = response.data.token;
+        localStorage.setItem("token", token);
         navigate('/dashboard');
 
       } catch (error) {
@@ -170,6 +172,7 @@ const Signin = () => {
                 name="password"
                 label="Password" 
                 placeholder="password"
+                autoComplete="off"
                 onChange={handleInputChange}/>
                 <div className="flex justify-start">
                   {formValidationErrors.password && <p className="text-red-500 text-sm mt-1">{formValidationErrors.password}</p>}

@@ -4,6 +4,7 @@ import Signin from './pages/Signin';
 import Dashboard from './pages/Dashboard';
 import Send from './pages/Send';
 import Home from './pages/Home';
+import ProtectedRoutes from './utils/ProtectedRoutes'
 
 function App() {
 
@@ -14,7 +15,9 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/signup' element={<Signup />} />
             <Route path='/signin' element={<Signin />} />
-            <Route path='/dashboard' element={<Dashboard />} />
+            <Route element={<ProtectedRoutes />}>
+              <Route path='/dashboard' element={<Dashboard />} />
+            </Route>
             <Route path='/send' element={<Send />} />
           </Routes>
         </Router>
