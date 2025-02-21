@@ -5,6 +5,8 @@ import {Navigate, Outlet} from "react-router-dom"
 
 function ProtectedRoutes() {
     const [isValid, setIsValid] = useState(null)
+    const [userData, setUserData] = useState(null)
+    
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -20,9 +22,8 @@ function ProtectedRoutes() {
                         Authorization:`Bearer ${token}`,
                     }
                 });
-                console.log(response);
+                setUserData(response.data.firstName);
                 setIsValid(true);
-
               } catch (error) {
                 setIsValid(false);
                 localStorage.removeItem("token");
@@ -37,7 +38,8 @@ function ProtectedRoutes() {
         return <p>Loading...</p>
     }
 
-  return isValid?<Outlet />:<Navigate to="/signin" replace />
+    return isValid ? <Outlet context={{ firstName: userData }} /> : <Navigate to="/signin" replace />;
+
 }
 
 export default ProtectedRoutes
