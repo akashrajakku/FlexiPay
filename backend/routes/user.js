@@ -201,48 +201,45 @@ const querySchema= zod.object({
   filter: zod.string().max(50)
 })
 
-router.get('/bulk', async(req, res)=>{
+router.get('/bulk', async (req, res) => {
   try {
-      const{success}= querySchema.safeParse(req.query);
+    const { success} = querySchema.safeParse(req.query);
 
-      if(!success){
-        res.status(400).json({
-          message: "Invalid Query, Provide a String query of max length 50"
-        })
-      }
+    if (!success) {
+      return res.status(400).json({
+        message: "Invalid Query, Provide a String query of max length 50"
+      });
+    }
 
-    const filter= req.query.filter || "";
+    
+    const filter = (req.query.filter || "").trim();
 
-    const filtered_users= await User.find({
+    const filteredUsers = await User.find({
       $or: [
-        {firstName: filter},
-        {lastName: filter}
+        { firstName: { $regex: filter, $options: "i" } },
+        { lastName: { $regex: filter, $options: "i" } }
       ]
-    })
+    });
 
-    users= filtered_users.map((user)=>{
-      return{
-        firstName: user.firstName,
-        lastName: user.lastName,
-        _id: user._id
-      }
-    })
     
-    if(filtered_users.length > 0){
-      res.status(200).json({
-         users
-      })
-    }else{
-      res.status(200).json({
-        message: "No user found"
-      })
+    const users = filteredUsers.map(user => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      _id: user._id
+    }));
+
+    
+    if (users.length > 0) {
+      return res.status(200).json({ users });
+    } else {
+      return res.status(200).json({ message: "No user found" });
     }
 
-    } catch (error) {
-        res.status(500).json({
-          message: "Internal Server Error"
-        })
-    }
-    
-})
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error"
+    });
+  }
+});
+
 module.exports= router;
