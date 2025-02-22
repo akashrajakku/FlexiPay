@@ -5,13 +5,13 @@ import Users from "../components/Users"
 import { useOutletContext } from "react-router-dom";
 
 function Dashboard() {
-  const { firstName } = useOutletContext() || {};
+  const { firstName, balance } = useOutletContext() || {};
 
   return (
     <>
     <div className="min-h-screen">
       <Appbar user={firstName || "User"} />
-      <Balance balance={"10,000"} />
+      <Balance balance={balance || "Wait..."} />
       <Users />
       </div>
       <Footer />

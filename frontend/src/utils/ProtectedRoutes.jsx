@@ -5,7 +5,9 @@ import {Navigate, Outlet} from "react-router-dom"
 
 function ProtectedRoutes() {
     const [isValid, setIsValid] = useState(null)
-    const [userData, setUserData] = useState(null)
+    const [userFirstName, setUserFirstName] = useState(null)
+    const [userBalance, setUserBalance] = useState(null)
+    const [userId, setUserId] = useState(null)
     
     const token = localStorage.getItem("token");
 
@@ -22,23 +24,40 @@ function ProtectedRoutes() {
                         Authorization:`Bearer ${token}`,
                     }
                 });
-                setUserData(response.data.firstName);
+                setUserFirstName(response.data.firstName);
+                setUserId(response.data.userId);
                 setIsValid(true);
               } catch (error) {
                 setIsValid(false);
                 localStorage.removeItem("token");
               }
-
             }
-
         validateToken();
     }, [token])
+
+    useEffect(() => {
+        const getUserBalance = async() => {        
+              try {
+                const response =  await axios.get("http://localhost:3000/api/v1/account/balance", {
+                    headers:{
+                        Authorization:`Bearer ${token}`,
+                    }
+                });
+                setUserBalance(response.data.balance);
+              } catch (error) {
+                console.log(`error from getUserBalance : ${error}`);
+                setIsValid(false);
+              }
+
+            }
+        getUserBalance();
+    }, [token, userId])
 
     if(isValid === null){
         return <p>Loading...</p>
     }
 
-    return isValid ? <Outlet context={{ firstName: userData }} /> : <Navigate to="/signin" replace />;
+    return isValid ? <Outlet context={{ firstName: userFirstName, balance: userBalance }} /> : <Navigate to="/signin" replace />;
 
 }
 
