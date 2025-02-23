@@ -242,4 +242,18 @@ router.get('/bulk', async (req, res) => {
   }
 });
 
+router.get('/suggestion', async(req, res) => {
+  try {
+    const suggestedUsers = await User.aggregate([{$sample: {size : 5}}]);
+    res.status(201).json({
+      suggestedUsers
+    })
+    
+  } catch (error) {
+      res.status(500).json({
+          message: "Internal Server Error"
+      })
+  }
+})
+
 module.exports= router;

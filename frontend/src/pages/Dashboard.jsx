@@ -19,7 +19,7 @@ function Dashboard() {
       <Appbar user={firstName || "User"} />
       <Balance 
         flag={showBalance} 
-        balanceText= {showBalance?"Your Balance":"Get Balance"}
+        balanceText= {showBalance?"Your Balance":"View Balance"}
         balance={balance || "Wait..."} 
         onClick={handleToggleBalance}
       />
