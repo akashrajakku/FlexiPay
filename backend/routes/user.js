@@ -164,37 +164,34 @@ const updateSchema = zod.object({
   firstName: zod.string().max(50).optional(),
   lastName: zod.string().max(50).optional(),
 });
-router.put('/', authMiddleware, async(req, res)=>{
-    try {
-      const{success}= updateSchema.safeParse(req.body);
-      if (!success) {
-        res.status(411).json({
-            message: "Error while updating information"
-        })
+
+router.put('/update', authMiddleware, async (req, res) => {
+  try {
+    const { success } = updateSchema.safeParse(req.body);
+    if (!success) {
+      return res.status(411).json({
+        message: "Error while updating information",
+      });
     }
 
-    const updates={};
-    if(req.body.firstName) updates.firstName= req.body.firstName;
-    if(req.body.lastName) updates.lastName= req.body.lastName;
-    if(req.body.password) updates.password= await hashPassword(req.body.password);
+    const updates = {};
+    if (req.body.firstName) updates.firstName = req.body.firstName;
+    if (req.body.lastName) updates.lastName = req.body.lastName;
+    if (req.body.password) updates.password = await hashPassword(req.body.password);
 
-    const update_result= await User.updateOne({_id: req.userId}, {$set: updates});
+    const update_result = await User.updateOne({ _id: req.userId }, { $set: updates });
 
-    if(update_result.modifiedCount > 0){
-        res.status(200).json({
-          message: "Updated successfully"
-      })
+    if (update_result.modifiedCount > 0) {
+      return res.status(200).json({ message: "Updated successfully" });
+    } else {
+      return res.status(404).json({ message: "User not found or no changes made" });
     }
-    else {
-      res.status(404).json({ message: 'User not found or no changes made' });
-  }
-    
   } catch (error) {
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-})
+});
+
 
 //to get user based on query provided as firstName/lastName
 const querySchema= zod.object({

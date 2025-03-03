@@ -1,0 +1,86 @@
+import { useState } from "react";
+import axios from "axios";
+
+export default function UpdateProfile({ onClose }) {
+  const [formData, setFormData] = useState({ firstName: "", lastName: "", password: "" });
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setError("");
+
+    // Create an object with only non-empty fields
+    const filteredData = Object.fromEntries(
+      Object.entries(formData).filter(([_, value]) => value.trim() !== "")
+    );
+
+    if (Object.keys(filteredData).length === 0) {
+      setError("Please enter at least one field to update.");
+      return;
+    }
+
+    try {
+      const { data } = await axios.put(
+        "http://localhost:3000/api/v1/user/update",
+        filteredData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setMessage(data.message);
+    } catch (err) {
+      setError(err.response?.data?.message || "Internal server error");
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+        <button onClick={onClose} className="absolute top-2 right-2 text-xl">
+          &times;
+        </button>
+        <h2 className="text-lg font-semibold mb-4">Update Your Profile</h2>
+        {message && <p className="text-green-600">{message}</p>}
+        {error && <p className="text-red-600">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First Name"
+            value={formData.firstName}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last Name"
+            value={formData.lastName}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="New Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-2 border rounded mb-2"
+          />
+          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
+            Update
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
