@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import useDebounce from "../hooks/UseDebounce"
+import useDebounce from "../hooks/useDebounce"
 import UserNotFound from "./UserNotFound"
 import DashboardSuggestions from "./DashboardSuggestions"
 import RenderUser from "./RenderUser"
