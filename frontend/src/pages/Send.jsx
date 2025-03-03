@@ -1,6 +1,7 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { useState } from 'react';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Send() {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,7 @@ export default function Send() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/api/v1/account/transfer",
+        `${API_BASE_URL}/api/v1/account/transfer`,
         { to: receiverId, amount },
         {
           headers: {

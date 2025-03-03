@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useEffect } from "react";
 import axios from "axios"
 import RenderUser from "./RenderUser";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function DashboardSuggestions({label="People You May Know"}) {
     const [suggestions, setSuggestions] = useState([])
@@ -10,7 +11,7 @@ function DashboardSuggestions({label="People You May Know"}) {
     useEffect(() => {
         const fetchUsers = async () => {
           try {
-            const response = await axios.get(`http://localhost:3000/api/v1/user/suggestion`);
+            const response = await axios.get(`${API_BASE_URL}/api/v1/user/suggestion`);
            
             if (response.data.message === "Internal Server Error") {
                 console.log(`error while suggestion backend call`);

@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react"
 import axios from "axios"
 import {Navigate, Outlet} from "react-router-dom"
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProtectedRoutes() {
     const [isValid, setIsValid] = useState(null)
@@ -19,7 +19,7 @@ function ProtectedRoutes() {
               }
         
               try {
-                const response =  await axios.get("http://localhost:3000/api/v1/auth/validate", {
+                const response =  await axios.get(`${API_BASE_URL}/api/v1/auth/validate`, {
                     headers:{
                         Authorization:`Bearer ${token}`,
                     }
@@ -38,7 +38,7 @@ function ProtectedRoutes() {
     useEffect(() => {
         const getUserBalance = async() => {        
               try {
-                const response =  await axios.get("http://localhost:3000/api/v1/account/balance", {
+                const response =  await axios.get(`${API_BASE_URL}/api/v1/account/balance`, {
                     headers:{
                         Authorization:`Bearer ${token}`,
                     }

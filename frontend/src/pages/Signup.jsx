@@ -11,7 +11,7 @@ import signup2 from "../resources/signup2.jpg";
 import Footer from '../components/Footer';
 import ValidateEmail from "../utils/ValidateEmail";
 import { useNavigate } from "react-router-dom";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const Signup = () => {
@@ -109,7 +109,7 @@ const navigate =useNavigate();
 
       if(validateForm()){
          try {
-            const response = await axios.post("http://localhost:3000/api/v1/user/signup", {
+            const response = await axios.post(`${API_BASE_URL}/api/v1/user/signup`, {
                 firstName:formData.firstName,
                 lastName:formData.lastName,
                 username:formData.email,

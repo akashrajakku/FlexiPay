@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function UpdateProfile({ onClose }) {
   const [formData, setFormData] = useState({ firstName: "", lastName: "", password: "" });
@@ -27,7 +28,7 @@ export default function UpdateProfile({ onClose }) {
 
     try {
       const { data } = await axios.put(
-        "http://localhost:3000/api/v1/user/update",
+        `${API_BASE_URL}/api/v1/user/update`,
         filteredData,
         {
           headers: {

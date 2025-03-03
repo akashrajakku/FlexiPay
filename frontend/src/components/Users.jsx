@@ -4,6 +4,7 @@ import useDebounce from "../hooks/useDebounce"
 import UserNotFound from "./UserNotFound"
 import DashboardSuggestions from "./DashboardSuggestions"
 import RenderUser from "./RenderUser"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Users() {
   const [users, setUsers] = useState([])
@@ -15,7 +16,7 @@ export default function Users() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/v1/user/bulk?filter=${debouncedFilter}`);
+        const response = await axios.get(`${API_BASE_URL}/api/v1/user/bulk?filter=${debouncedFilter}`);
        
         if (response.data.message === "No user found") {
           setUserFound(false);

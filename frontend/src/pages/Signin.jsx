@@ -9,7 +9,7 @@ import { useNavigate} from 'react-router-dom';
 import axios from "axios";
 import { useState } from "react"
 import ValidateEmail from "../utils/ValidateEmail"
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Signin = () => {
 
@@ -83,7 +83,7 @@ const Signin = () => {
 
     if(validateForm()){
       try {
-        const url="http://localhost:3000/api/v1/user/login";
+        const url=`${API_BASE_URL}/api/v1/user/login`;
         const response= await axios.post(url, {
             username: formData.username,
             password: formData.password
