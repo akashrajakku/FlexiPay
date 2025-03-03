@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FiUser, FiLogOut } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 export default function Appbar({ user }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +8,12 @@ export default function Appbar({ user }) {
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
+
+  const handleProfileClick= () =>{
+    navigate('/myprofile');
+  };
+
+  const navigate = useNavigate();
 
   return (
     <div className="w-full relative flex justify-between items-center shadow px-4 sm:px-8 md:px-14 py-2">
@@ -29,8 +36,8 @@ export default function Appbar({ user }) {
 
           {isOpen && (
             <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg py-2 w-32 sm:w-40 text-sm sm:text-base">
-              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center">
-                <FiUser className="mr-2" /> Visit Profile
+              <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center" onClick={handleProfileClick}>
+                <FiUser className="mr-2" /> My Profile
               </div>
               <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center">
                 <FiLogOut className="mr-2" /> Logout

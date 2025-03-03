@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import axios from "axios"
 import RenderUser from "./RenderUser";
 
-function DashboardSuggestions() {
+function DashboardSuggestions({label="People You May Know"}) {
     const [suggestions, setSuggestions] = useState([])
 
     //backend call to get random 5 entries
@@ -26,7 +26,7 @@ function DashboardSuggestions() {
 
   return (
     <>
-    <div className="font-bold text-large mt-16 mb-5">People You May Know</div>
+    <div className="font-bold text-large mt-16 mb-5">{label}</div>
     <div>{suggestions.length > 0 ? suggestions.map(suggestion => <RenderUser key={suggestion._id} label={suggestion} />) : <div>Internal Server Error</div>}</div>
     </>
   )

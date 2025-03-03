@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Send from './pages/Send';
 import Home from './pages/Home';
 import ProtectedRoutes from './utils/ProtectedRoutes'
+import MyProfile from './pages/MyProfile';
 
 function App() {
 
@@ -17,8 +18,9 @@ function App() {
             <Route path='/signin' element={<Signin />} />
             <Route element={<ProtectedRoutes />}>
               <Route path='/dashboard' element={<Dashboard />} />
+              <Route path='/myprofile' element={<MyProfile />} />
+              <Route path='/send' element={<Send />} />
             </Route>
-            <Route path='/send' element={<Send />} />
           </Routes>
         </Router>
     </>
