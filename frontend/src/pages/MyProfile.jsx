@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import DashboardSuggestions from "../components/DashboardSuggestions";
 import Footer from "../components/Footer";
 import UpdateProfile from "../components/UpdateProfile";
@@ -7,11 +7,15 @@ import UpdateProfile from "../components/UpdateProfile";
 export default function MyProfile() {
   const { firstName, balance } = useOutletContext() || {};
   const [showUpdateModal, setShowUpdateModal] = useState(false);
-
+  const navigate= useNavigate();
+  const handleLogout=()=>{
+    localStorage.removeItem("token");
+    navigate('/signin');
+  }
   return (
     <>
       <div className="flex flex-col md:flex-row w-full p-6 md:p-12 relative">
-        <button className="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+        <button className="absolute top-4 right-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600" onClick={handleLogout}>
           Logout
         </button>
         <div className="w-full md:w-1/3 flex flex-col items-center text-center p-4">

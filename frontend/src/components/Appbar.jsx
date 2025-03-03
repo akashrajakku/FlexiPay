@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 export default function Appbar({ user }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleClick = () => {
     setIsOpen(!isOpen);
   };
@@ -13,7 +15,10 @@ export default function Appbar({ user }) {
     navigate('/myprofile');
   };
 
-  const navigate = useNavigate();
+  const handleLogout=()=>{
+      localStorage.removeItem("token");
+      navigate('/signin');
+  }
 
   return (
     <div className="w-full relative flex justify-between items-center shadow px-4 sm:px-8 md:px-14 py-2">
@@ -40,7 +45,7 @@ export default function Appbar({ user }) {
                 <FiUser className="mr-2" /> My Profile
               </div>
               <div className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center">
-                <FiLogOut className="mr-2" /> Logout
+                <FiLogOut className="mr-2" onClick={handleLogout}/> Logout
               </div>
             </div>
           )}
