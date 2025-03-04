@@ -173,6 +173,7 @@ const Signin = () => {
 
             <div>
               <InputBox 
+                type="password"
                 name="password"
                 label="Password" 
                 placeholder="password"

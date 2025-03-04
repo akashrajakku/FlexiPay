@@ -239,6 +239,7 @@ const navigate =useNavigate();
 
               <div>
                 <InputBox
+                  type="password"
                   onChange={handleInputChange}
                   label="Password"
                   placeholder="At least 6 characters"
@@ -250,7 +251,8 @@ const navigate =useNavigate();
               </div>
 
               <div>
-                <InputBox 
+                <InputBox
+                type="password" 
                 label="Re-enter Password" 
                 onChange={handleInputChange}
                 name = "password2"

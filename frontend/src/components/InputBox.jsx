@@ -1,9 +1,9 @@
-const InputBox = ({label, value, name, onChange, placeholder, autoComplete}) => {
+const InputBox = ({label, value, name, onChange, placeholder, autoComplete, type="text"}) => {
   return (
     <label className="w-full block">
       <span className="block font-medium text-left text-sm pt-2 pb-1">{label}</span>
       <input 
-        type="text" 
+        type={type}
         value={value} 
         onChange={onChange} 
         name={name} 
