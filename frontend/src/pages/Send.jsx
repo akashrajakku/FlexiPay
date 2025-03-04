@@ -1,13 +1,16 @@
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useState } from 'react';
+import { useState, useContext } from "react";
+import { UserContext } from "../context/UserContext";  
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Send() {
+  const { user, setUser } = useContext(UserContext); 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const receiverId = searchParams.get('id');
-  const receiverName = searchParams.get('name');
+  const receiverId = searchParams.get("id");
+  const receiverName = searchParams.get("name");
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -21,13 +24,19 @@ export default function Send() {
         `${API_BASE_URL}/api/v1/account/transfer`,
         { to: receiverId, amount },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
+
       setMessage(data.message);
-      setTimeout(() => navigate("/dashboard"), 2000); // Redirect to dashboard after 2 seconds
+
+      
+      setUser((prevUser) => ({
+        ...prevUser,
+        balance: prevUser.balance - parseFloat(amount), 
+      }));
+
+      setTimeout(() => navigate("/dashboard"), 2000); 
     } catch (err) {
       setError(err.response?.data?.message || "Internal server error");
     }
@@ -37,7 +46,7 @@ export default function Send() {
     <div className="flex items-center justify-center min-h-screen bg-blue-100">
       <div className="bg-white shadow-md rounded-lg p-6 sm:p-10 w-full max-w-sm">
         <h2 className="text-2xl font-bold text-center mb-6">Send Money To</h2>
-        
+
         <div className="flex items-center mb-4">
           <div className="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">
             {receiverName[0]}
