@@ -9,7 +9,7 @@ export default function MyProfile() {
   const { user, setUser } = useContext(UserContext); 
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const navigate = useNavigate();
-  console.log(user);
+  //console.log(user);
   
   const handleLogout = () => {
     localStorage.removeItem("token");

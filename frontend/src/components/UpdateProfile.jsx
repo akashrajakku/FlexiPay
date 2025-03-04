@@ -34,6 +34,11 @@ export default function UpdateProfile({ onClose, setUser }) {
       return;
     }
 
+    if(Object.keys(filteredData.password).length < 6){
+      setError("Password should be at least 6 characters");
+      return;
+    }
+
     try {
       const { data } = await axios.put(
         `${API_BASE_URL}/api/v1/user/update`,
@@ -73,8 +78,8 @@ export default function UpdateProfile({ onClose, setUser }) {
           &times;
         </button>
         <h2 className="text-lg font-semibold mb-4">Update Your Profile</h2>
-        {message && <p className="text-green-600">{message}</p>}
-        {error && <p className="text-red-600">{error}</p>}
+        {message && <p className="text-green-600 pb-2">{message}</p>}
+        {error && <p className="text-red-600 pb-2">{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -95,7 +100,7 @@ export default function UpdateProfile({ onClose, setUser }) {
           <input
             type="password"
             name="password"
-            placeholder="New Password"
+            placeholder="Minimum 6 characters"
             value={formData.password}
             onChange={handleChange}
             className="w-full p-2 border rounded mb-2"
