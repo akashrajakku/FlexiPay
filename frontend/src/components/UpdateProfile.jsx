@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { UserContext } from "../context/UserContext"; 
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function UpdateProfile({ onClose }) {
-  const [formData, setFormData] = useState({ firstName: "", lastName: "", password: "" });
+  const { user, setUser } = useContext(UserContext); 
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    password: "",
+  });
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -16,7 +24,7 @@ export default function UpdateProfile({ onClose }) {
     setMessage("");
     setError("");
 
-    // Create an object with only non-empty fields
+    
     const filteredData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value.trim() !== "")
     );
@@ -38,6 +46,16 @@ export default function UpdateProfile({ onClose }) {
       );
 
       setMessage(data.message);
+
+     
+      const updatedUser = await axios.get(`${API_BASE_URL}/api/v1/user/me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      setUser(updatedUser.data); 
+
     } catch (err) {
       setError(err.response?.data?.message || "Internal server error");
     }
