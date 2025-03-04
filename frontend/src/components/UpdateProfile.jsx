@@ -1,11 +1,12 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { UserContext } from "../context/UserContext"; 
+import { UserContext } from "../context/UserContext";  // Import UserContext
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export default function UpdateProfile({ onClose }) {
-  const { user, setUser } = useContext(UserContext); 
+export default function UpdateProfile({ onClose, setUser }) {
+  const { user } = useContext(UserContext);  // Get user from context
+
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
@@ -24,7 +25,6 @@ export default function UpdateProfile({ onClose }) {
     setMessage("");
     setError("");
 
-    
     const filteredData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value.trim() !== "")
     );
@@ -45,16 +45,21 @@ export default function UpdateProfile({ onClose }) {
         }
       );
 
-      setMessage(data.message);
+      setMessage("Profile updated successfully!");
 
-     
+      // Fetch updated user info
       const updatedUser = await axios.get(`${API_BASE_URL}/api/v1/user/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      setUser(updatedUser.data); 
+      setUser((prevUser) => ({
+        ...prevUser, 
+        ...updatedUser.data,
+      }));
+      
+      onClose(); // Close modal after update
 
     } catch (err) {
       setError(err.response?.data?.message || "Internal server error");
