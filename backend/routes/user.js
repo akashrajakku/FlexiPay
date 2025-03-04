@@ -253,8 +253,6 @@ router.get('/suggestion', async(req, res) => {
   }
 })
 
-const { User, Account } = require("../db");
-
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password"); // Exclude password field
