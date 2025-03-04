@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import DashboardSuggestions from "../components/DashboardSuggestions";
 import Footer from "../components/Footer";
 import UpdateProfile from "../components/UpdateProfile";
-import { UserContext } from "../context/UserContext";  // Import UserContext
+import { UserContext } from "../context/UserContext"; 
 
 export default function MyProfile() {
-  const { user, setUser } = useContext(UserContext); // Get user and setUser from context
+  const { user, setUser } = useContext(UserContext); 
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const navigate = useNavigate();
-
+  console.log(user);
+  
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate('/signin');
