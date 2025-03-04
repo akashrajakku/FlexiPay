@@ -4,7 +4,8 @@ import InputBox from "../components/InputBox";
 import BottomWarning from "../components/BottomWarning";
 import Button from "../components/Button";
 import Logo from "../resources/logo.png";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import signup1 from "../resources/signup1.png";
 import signup2 from "../resources/signup2.jpg";
@@ -15,7 +16,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const Signup = () => {
-  {/* state variable to keep track of changes made in form and also to store error related to each field*/}
+
+  const { fetchUser } = useContext(UserContext);
+
   const [formData, setFormData] = useState({
       firstName: "",
       lastName: "",
@@ -136,6 +139,7 @@ const navigate =useNavigate();
             localStorage.setItem("token", response.data.token);
             
               setLoader(false);
+              await fetchUser();
               navigate('/dashboard');
             
          } catch (error) {

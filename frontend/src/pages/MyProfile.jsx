@@ -13,6 +13,7 @@ export default function MyProfile() {
   
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setUser(null);
     navigate('/signin');
   };
 

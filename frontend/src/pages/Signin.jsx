@@ -7,11 +7,14 @@ import Logo from "../resources/logo.png"
 import signin1 from '../resources/signin1.jpg'
 import { useNavigate} from 'react-router-dom';
 import axios from "axios";
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { UserContext } from "../context/UserContext";
 import ValidateEmail from "../utils/ValidateEmail"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Signin = () => {
+
+  const { fetchUser } = useContext(UserContext);
 
   const [formData, setFormData] = useState({
       username:"",
@@ -91,6 +94,7 @@ const Signin = () => {
 
         const token = response.data.token;
         localStorage.setItem("token", token);
+        await fetchUser();
         navigate('/dashboard');
 
       } catch (error) {
