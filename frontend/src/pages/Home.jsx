@@ -23,13 +23,21 @@ function Home() {
         navigate('/signup');
     };
 
+    const handleDashboardClick=()=>{
+        navigate('/dashboard')
+    }
+
     return (
         <div className="relative min-h-screen flex flex-col">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row justify-between items-center p-5">
-                <img src={logo} alt="logo" className="w-48 mb-4 md:mb-0" />
-                <Button label="Login" onClick={handleSignin} />
+            <div className="flex flex-col md:flex-row justify-between items-center p-5 w-full">
+                <img src={logo} alt="logo" className="w-36 md:w-48 mb-4 md:mb-0" />
+                <div className="flex  md:flex-row gap-4 md:gap-6 w-full md:w-auto">
+                    <Button label="My Dashboard" onClick={handleDashboardClick} className="w-1/2 md:w-auto" />
+                    <Button label="Login" onClick={handleSignin} className="w-1/2 md:w-auto" />
+                </div>
             </div>
+
 
             {/* Main Content Section */}
             <div className="flex-grow flex flex-col md:flex-row justify-between items-center px-5 md:px-10">

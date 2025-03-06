@@ -40,6 +40,9 @@ const [errorMessage, setErrorMessage] = useState("")
 
 const navigate =useNavigate();
 
+  const handleLogoClick = () =>{
+      navigate('/');
+  }
 {/* Setting values and errors into state variable upon change in input field */}
 
   const handleInputChange = (event) =>{
@@ -189,7 +192,7 @@ const navigate =useNavigate();
   return (
     <div className="min-h-screen flex flex-col ">
       {/* Logo Section */}
-      <div className="pt-5 pb-9 pl-10">
+      <div className="pt-5 pb-9 pl-10 cursor-pointer" onClick={handleLogoClick}>
         <img src={Logo} className="w-40" alt="Logo" />
       </div>
 

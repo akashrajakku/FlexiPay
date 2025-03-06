@@ -2,12 +2,17 @@ import { useState, useContext } from "react";
 import { FiUser, FiLogOut } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import logo from '../resources/logo.png';
 
 export default function Appbar() {
   const { user, setUser } = useContext(UserContext); 
   const [isOpen, setIsOpen] = useState(false);
 
   const navigate = useNavigate();
+
+  const handleLogoClick = () =>{
+    navigate('/');
+  }
 
   const handleClick = () => {
     setIsOpen(!isOpen);
@@ -25,7 +30,7 @@ export default function Appbar() {
 
   return (
     <div className="w-full relative flex justify-between items-center shadow px-4 sm:px-8 md:px-14 py-2">
-      <div className="text-lg sm:text-xl md:text-2xl font-bold">FlexiPay</div>
+      <img src={logo} alt="logo" className="w-36 md:w-40 mb-4 cursor-pointer md:mb-0" onClick={handleLogoClick}/>
 
       <div className="flex items-center relative">
         <div className="text-sm sm:text-base md:text-lg">Hello, {user?.firstName}</div>
