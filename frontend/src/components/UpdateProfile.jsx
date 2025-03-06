@@ -28,13 +28,14 @@ export default function UpdateProfile({ onClose, setUser }) {
     const filteredData = Object.fromEntries(
       Object.entries(formData).filter(([_, value]) => value.trim() !== "")
     );
+    
 
     if (Object.keys(filteredData).length === 0) {
       setError("Please enter at least one field to update.");
       return;
     }
 
-    if(Object.keys(filteredData.password).length < 6){
+    if(Object.keys(filteredData.password) && Object.keys(filteredData.password).length < 6){
       setError("Password should be at least 6 characters");
       return;
     }
