@@ -1,11 +1,11 @@
 import { useState, useContext } from "react";
 import axios from "axios";
-import { UserContext } from "../context/UserContext";  // Import UserContext
+import { UserContext } from "../context/UserContext";  
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function UpdateProfile({ onClose, setUser }) {
-  const { user } = useContext(UserContext);  // Get user from context
+  const { user } = useContext(UserContext);  
 
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
@@ -29,16 +29,16 @@ export default function UpdateProfile({ onClose, setUser }) {
       Object.entries(formData).filter(([_, value]) => value.trim() !== "")
     );
     
-
     if (Object.keys(filteredData).length === 0) {
       setError("Please enter at least one field to update.");
       return;
     }
 
-    if(Object.keys(filteredData.password) && Object.keys(filteredData.password).length < 6){
+    if ("password" in filteredData && typeof filteredData.password === "string" && filteredData.password.length < 6) {
       setError("Password should be at least 6 characters");
       return;
     }
+  
 
     try {
       const { data } = await axios.put(
@@ -53,7 +53,6 @@ export default function UpdateProfile({ onClose, setUser }) {
 
       setMessage("Profile updated successfully!");
 
-      // Fetch updated user info
       const updatedUser = await axios.get(`${API_BASE_URL}/api/v1/user/me`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -65,7 +64,7 @@ export default function UpdateProfile({ onClose, setUser }) {
         ...updatedUser.data,
       }));
       
-      onClose(); // Close modal after update
+      onClose(); 
 
     } catch (err) {
       setError(err.response?.data?.message || "Internal server error");
